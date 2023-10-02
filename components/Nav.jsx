@@ -6,8 +6,7 @@ import { useState,useEffect } from "react"
 import {signIn,signOut,useSession,getProviders} from "next-auth/react"
 
 export const Nav = () => {
-
-  let isUserLoggedIn = true;
+  const {data:session} = useSession()
   const [providers,setProviders] = useState(null)
   const [toggleDropdown,setToggleDropdown] = useState(false)
   
@@ -33,13 +32,13 @@ export const Nav = () => {
       {/* {Desktop navigation} */}
       <div className="sm:flex hidden">
         {
-            isUserLoggedIn ? (
+            session?.user ? (
                 <div className="flex gap-3 md:gap-5">
                     <Link href="/create-prompt" className="black_btn">Create Post</Link>
                     <button className="outline_btn" onClick={signOut}>Sign Out</button>
                     <Link href="/profile" >
                         <Image
-                        src="/assets/images/logo.svg"
+                        src={session?.user.image}
                         width = {37}
                         height = {37}
                         className="rounded-full"
@@ -50,15 +49,14 @@ export const Nav = () => {
             ) : (
                 <>
                   {
-                    providers && 
-                     Object.values(providers).map((provider) => (
-                      <button type="button" key={provider.name}
-                        onClick={() => signIn(provider.id)}
-                        className="black_btn"
-                        >
+                    providers && (
+                      <button type="button"
+                      onClick={() => signIn()}
+                      className="black_btn"
+                      >
                         Sign In
                       </button>
-                     ))
+                    )
                   }
                 </>
             )
@@ -68,10 +66,10 @@ export const Nav = () => {
       {/* {Mobile Navigation} */}
       <div className="sm:hidden flex relative">
         {
-          isUserLoggedIn ? (
+          session?.user ? (
             <div className="flex">
                <Image
-                  src="/assets/images/logo.svg"
+                  src={session?.user.image}
                   width = {37}
                   height = {37}
                   className="rounded-full"
@@ -117,15 +115,14 @@ export const Nav = () => {
           ) : (
             <>
               {
-                providers && 
-                  Object.values(providers).map((provider) => (
-                  <button type="button" key={provider.name}
-                    onClick={() => signIn(provider.id)}
+                providers && (
+                  <button type="button"
+                    onClick={() => signIn()}
                     className="black_btn"
                     >
                     Sign In
                   </button>
-                  ))
+                )
               }
             </>
           )
